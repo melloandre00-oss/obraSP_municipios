@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Mapa Interativo</title>
+
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.css" rel="stylesheet">
+
+<style>
+
+body {
+margin:0;
+padding:0;
+font-family: Arial, Helvetica, sans-serif;
+}
+
+#map {
+position:absolute;
+top:0;
+bottom:0;
+width:100%;
+}
+
+.popup-content{
+font-size:14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<script>
+
+// TOKEN MAPBOX
+mapboxgl.accessToken = 'pk.eyJ1IjoiYW5kcmVtZWxsbzAwIiwiYSI6ImNtbHFvcGp3ajAxdWkzZW91MnloZDJocW4ifQ.j4Nmulrb2F9QrgLPBjwreA';
+
+// CRIAR MAPA
+const map = new mapboxgl.Map({
+container: 'map',
+style: 'mapbox://styles/andremello00/cmmrzax12009g01s1gvog3h6l',
+center: [-48.54334, -22.611646],
+zoom: 6.7
+});
+
+// POPUP
+const popup = new mapboxgl.Popup({
+closeButton: false,
+closeOnClick: false
+});
+
+map.on('load', () => {
+
+let hoveredRegion = null;
+
+// HOVER
+map.on('mousemove', 'obrasp-municpios', (e) => {
+
+if (!e.features.length) return;
+
+map.getCanvas().style.cursor = 'pointer';
+
+const feature = e.features[0];
+const props = feature.properties;
+
+hoveredRegion = props.CLASSNM_RGI_1;
+
+// atualiza opacidade da camada
+map.setPaintProperty(
+'obrasp-municpios',
+'fill-opacity',
+[
+'case',
+['==', ['get','CLASSNM_RGI_1'], hoveredRegion],
+1,
+0.1
+]
+);
+
+// popup
+popup
+.setLngLat(e.lngLat)
+.setHTML(`
+<div class="popup-content">
+<b>Região: ${props.CLASSNM_RGI_1}</b><br>
+Cidade: ${props.NM_MUN}<br>
+Habitantes: ${props.CLASSQTD_HAB}<br>
+CDA: ${props.CLASSCDA}<br>
+TCI: ${props.CLASSTCI}<br>
+Colportores: ${props.CLASSQTD_COLP}
+</div>
+`)
+.addTo(map);
+
+});
+
+// sair do polígono
+map.on('mouseleave', 'obrasp-municpios', () => {
+
+map.getCanvas().style.cursor = '';
+
+popup.remove();
+
+hoveredRegion = null;
+
+// restaurar opacidade normal
+map.setPaintProperty(
+'obrasp-municpios',
+'fill-opacity',
+1
+);
+
+});
+
+});
+
+</script>
+
+</body>
+</html>
