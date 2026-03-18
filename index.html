@@ -2,122 +2,556 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Mapa Obra SP</title>
-
+<title>Mapa | Obra SP</title>
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.js"></script>
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.css" rel="stylesheet">
 
 <style>
-
+/* Reset básico */
 body {
-margin:0;
-padding:0;
-font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+/* Cabeçalho */
+#header {
+    background-color: #ffffff;
+    color: #333;
+    padding: 18px 25px;
+    border-bottom: 1px solid #eaeaea;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#header h1 {
+    margin: 0;
+    font-size: 20px;
+    color: #2c3e50;
+}
+
+/* Container principal */
+#main-container {
+    display: flex;
+    flex: 1;
+    width: 100%;
+}
+
+/* Painel Lateral */
+#sidebar {
+    width: 340px;
+    background-color: #ffffff;
+    padding: 30px 25px;
+    box-shadow: 10px 0 15px rgba(0, 0, 0, 0.03); 
+    z-index: 5;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#sidebar h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+#sidebar hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 0;
+}
+
+/* Seção de Filtros e Header do Filtro */
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#sidebar .section-title {
+    font-size: 14px;
+    color: #2c3e50;
+    margin-top: 0;
+    margin-bottom: 10px;
+    border-left: 3px solid #007CB2;
+    padding-left: 8px;
+}
+
+.btn-limpar {
+    background-color: #f0f2f5;
+    border: 1px solid #dcdfe3;
+    color: #555;
+    padding: 5px 10px;
+    font-size: 11px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+.btn-limpar:hover {
+    background-color: #e4e6e9;
+    color: #333;
+}
+
+.filter-group {
+    margin-bottom: 12px;
+}
+
+.filter-label {
+    font-weight: 600;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+select {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    color: #333;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%22%2F%3E%3C%2Fsvg%22%3E');
+    background-repeat: no-repeat;
+    background-position: right 15px top 50%;
+    background-size: 10px auto;
+}
+
+select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Cards de Resumo */
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 12px;
+}
+
+.status-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.summary-card {
+    background-color: #f8f9fa;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.status-grid .summary-card {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 5px solid #ccc;
+}
+
+#card-emancipada { border-bottom-color: #0d5a0c; }
+#card-fase1 { border-bottom-color: #e8dc30; }
+#card-fase2 { border-bottom-color: #eae6e6; }
+
+.summary-card.full-width {
+    grid-column: span 2; 
+}
+
+.card-title {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 5px;
+    letter-spacing: 0.5px;
+}
+
+.status-grid .card-title {
+    font-size: 9px;
+    margin-bottom: 2px;
+}
+
+.card-value {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    color: #007CB2; 
+    font-weight: 700;
+}
+
+.status-grid .card-value {
+    font-size: 14px; /* Reduzido um pouco para caber a porcentagem confortavelmente */
+    color: #333;
+}
+
+/* Área do Mapa */
+#map-wrapper {
+    flex: 1;
+    position: relative;
+    margin: 15px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
 #map {
-position:absolute;
-top:0;
-bottom:0;
-width:100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
 }
 
-.popup-content{
-font-size:14px;
+/* Popup */
+.mapboxgl-popup-content {
+    font-family: 'Open Sans', sans-serif;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
+.popup-content b {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    display: block;
+}
+.popup-content { font-size: 13px; color: #555; line-height: 1.5; }
 
 </style>
 </head>
 
 <body>
 
-<div id="map"></div>
+<header id="header">
+    <h1>Obra SP - evolução e expansão</h1>
+</header>
+
+<div id="main-container">
+
+    <div id="sidebar">
+        
+        <div>
+            <div class="filter-header">
+                <h3 class="section-title">Filtros</h3>
+                <button id="btn-limpar" class="btn-limpar">Limpar</button>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label" for="filtro-regiao">Região</label>
+                <select id="filtro-regiao">
+                    <option value="todas">Todas as Regiões</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label" for="filtro-cidade">Cidade</label>
+                <select id="filtro-cidade">
+                    <option value="todas">Todas as Cidades</option>
+                </select>
+            </div>
+        </div>
+        
+        <hr>
+
+        <div>
+            <h3 class="section-title">Fases</h3>
+            <div class="summary-grid status-grid">
+                <div class="summary-card" id="card-emancipada">
+                    <span class="card-title">Emancipada</span>
+                    <span class="card-value" id="val-emancipada">...</span>
+                </div>
+                <div class="summary-card" id="card-fase1">
+                    <span class="card-title">Fase I</span>
+                    <span class="card-value" id="val-fase1">...</span>
+                </div>
+                <div class="summary-card" id="card-fase2">
+                    <span class="card-title">Fase II</span>
+                    <span class="card-value" id="val-fase2">...</span>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div>
+            <h3 class="section-title">Dados</h3>
+            <div class="summary-grid">
+                <div class="summary-card full-width">
+                    <span class="card-title">População (Habitantes)</span>
+                    <span class="card-value" id="val-populacao">Carregando...</span>
+                </div>
+                <div class="summary-card full-width">
+                    <span class="card-title">Total de Colportores</span>
+                    <span class="card-value" id="val-colportores">...</span>
+                </div>
+                <div class="summary-card">
+                    <span class="card-title">Cidades c/ CDA</span>
+                    <span class="card-value" id="val-cda">...</span>
+                </div>
+                <div class="summary-card">
+                    <span class="card-title">Cidades c/ TCI</span>
+                    <span class="card-value" id="val-tci">...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="map-wrapper">
+        <div id="map"></div>
+    </div>
+
+</div>
 
 <script>
-
-// TOKEN MAPBOX
 mapboxgl.accessToken = 'pk.eyJ1IjoiYW5kcmVtZWxsbzAwIiwiYSI6ImNtbHFvcGp3ajAxdWkzZW91MnloZDJocW4ifQ.j4Nmulrb2F9QrgLPBjwreA';
 
-// CRIAR MAPA
 const map = new mapboxgl.Map({
-container: 'map',
-style: 'mapbox://styles/andremello00/cmmrzax12009g01s1gvog3h6l',
-center: [-48.54334, -22.611646],
-zoom: 6.7
+    container: 'map',
+    style: 'mapbox://styles/andremello00/cmmrzax12009g01s1gvog3h6l',
+    center: [-48.54334, -22.611646],
+    zoom: 6.7
 });
 
-// POPUP
-const popup = new mapboxgl.Popup({
-closeButton: false,
-closeOnClick: false
-});
+const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
+
+let dadosCompletos = [];
+let hoveredCity = null; 
+
+function limparNumeroBR(valor) {
+    if (!valor) return 0;
+    if (typeof valor === 'number') return valor;
+    const textoLimpo = String(valor).replace(/\./g, '').replace(',', '.');
+    return Number(textoLimpo) || 0;
+}
+
+function popularFiltroCidades(regiaoSelecionada) {
+    const selectCidade = document.getElementById('filtro-cidade');
+    selectCidade.innerHTML = '<option value="todas">Todas as Cidades</option>';
+
+    let cidadesFiltradas = dadosCompletos;
+    if (regiaoSelecionada !== 'todas') {
+        cidadesFiltradas = dadosCompletos.filter(d => d.CLASSNM_RGI_1 === regiaoSelecionada);
+    }
+
+    const nomesUnicos = [...new Set(cidadesFiltradas.map(d => d.NM_MUN))].sort();
+
+    nomesUnicos.forEach(cidade => {
+        if(cidade) {
+            const option = document.createElement('option');
+            option.value = cidade;
+            option.textContent = cidade;
+            selectCidade.appendChild(option);
+        }
+    });
+}
+
+function atualizarOpacidadeMapa() {
+    const regiao = document.getElementById('filtro-regiao').value;
+    const cidade = document.getElementById('filtro-cidade').value;
+
+    if (!hoveredCity && regiao === 'todas' && cidade === 'todas') {
+        map.setPaintProperty('obrasp-municpios', 'fill-opacity', 1);
+        return;
+    }
+
+    let casoOpacidade = ['case'];
+
+    if (hoveredCity) {
+        casoOpacidade.push(['==', ['get', 'NM_MUN'], hoveredCity], 0.85);
+    }
+
+    if (cidade !== 'todas') {
+        casoOpacidade.push(['==', ['get', 'NM_MUN'], cidade], 1);
+        casoOpacidade.push(0.15);
+    } else if (regiao !== 'todas') {
+        casoOpacidade.push(['==', ['get', 'CLASSNM_RGI_1'], regiao], 1);
+        casoOpacidade.push(0.15); 
+    } else {
+        casoOpacidade.push(1); 
+    }
+
+    map.setPaintProperty('obrasp-municpios', 'fill-opacity', casoOpacidade);
+}
+
+
+function aplicarFiltrosEAtualizar() {
+    const regiao = document.getElementById('filtro-regiao').value;
+    const cidade = document.getElementById('filtro-cidade').value;
+
+    atualizarOpacidadeMapa();
+
+    let somaPopulacao = 0, somaColportores = 0, qtdCDA = 0, qtdTCI = 0;
+    let qtdEmancipada = 0, qtdFase1 = 0, qtdFase2 = 0;
+    let totalCidadesFiltradas = 0; // Nova variável para contar o total de cidades do filtro
+
+    dadosCompletos.forEach(props => {
+        const matchRegiao = (regiao === 'todas' || props.CLASSNM_RGI_1 === regiao);
+        const matchCidade = (cidade === 'todas' || props.NM_MUN === cidade);
+
+        if (matchRegiao && matchCidade) {
+            totalCidadesFiltradas++; // Soma +1 ao total de cidades visíveis
+
+            somaPopulacao += limparNumeroBR(props.CLASSQTD_HAB);
+            somaColportores += limparNumeroBR(props.CLASSQTD_COLP);
+
+            if (String(props.CLASSCDA).toLowerCase().trim() === 'sim') qtdCDA++;
+            if (String(props.CLASSTCI).toLowerCase().trim() === 'sim') qtdTCI++;
+
+            const status = String(props.CLASSSTATUS).toLowerCase().trim();
+            if (status === 'emancipada') qtdEmancipada++;
+            else if (status === 'fase i' || status === 'fase 1') qtdFase1++;
+            else if (status === 'fase ii' || status === 'fase 2') qtdFase2++;
+        }
+    });
+
+    // Função auxiliar para calcular a porcentagem de forma segura (evitando divisão por zero)
+    const calcPorcentagem = (valor, total) => total > 0 ? Math.round((valor / total) * 100) : 0;
+
+    const pctEmancipada = calcPorcentagem(qtdEmancipada, totalCidadesFiltradas);
+    const pctFase1 = calcPorcentagem(qtdFase1, totalCidadesFiltradas);
+    const pctFase2 = calcPorcentagem(qtdFase2, totalCidadesFiltradas);
+
+    const formata = new Intl.NumberFormat('pt-BR');
+    document.getElementById('val-populacao').textContent = formata.format(Math.round(somaPopulacao));
+    document.getElementById('val-colportores').textContent = formata.format(Math.round(somaColportores));
+    document.getElementById('val-cda').textContent = formata.format(qtdCDA);
+    document.getElementById('val-tci').textContent = formata.format(qtdTCI);
+    
+    // Atualização: Exibindo o valor absoluto formatado + a porcentagem
+    document.getElementById('val-emancipada').textContent = `${formata.format(qtdEmancipada)} (${pctEmancipada}%)`;
+    document.getElementById('val-fase1').textContent = `${formata.format(qtdFase1)} (${pctFase1}%)`;
+    document.getElementById('val-fase2').textContent = `${formata.format(qtdFase2)} (${pctFase2}%)`;
+}
 
 map.on('load', () => {
 
-let hoveredRegion = null;
+    map.on('mousemove', 'obrasp-municpios', (e) => {
+        if (!e.features.length) return;
+        map.getCanvas().style.cursor = 'pointer';
 
-// HOVER
-map.on('mousemove', 'obrasp-municpios', (e) => {
+        const props = e.features[0].properties;
+        
+        if (hoveredCity !== props.NM_MUN) {
+            hoveredCity = props.NM_MUN;
+            atualizarOpacidadeMapa();
+        }
 
-if (!e.features.length) return;
+        popup.setLngLat(e.lngLat).setHTML(`
+            <div class="popup-content">
+            <b>Região: ${props.CLASSNM_RGI_1}</b>
+            Cidade: ${props.NM_MUN}<br>
+            Status: ${props.CLASSSTATUS || 'Não informado'}<br>
+            Habitantes: ${props.CLASSQTD_HAB}<br>
+            CDA: ${props.CLASSCDA}<br>
+            TCI: ${props.CLASSTCI}<br>
+            Colportores: ${props.CLASSQTD_COLP}
+            </div>
+        `).addTo(map);
+    });
 
-map.getCanvas().style.cursor = 'pointer';
+    map.on('mouseleave', 'obrasp-municpios', () => {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+        hoveredCity = null;
+        atualizarOpacidadeMapa();
+    });
 
-const feature = e.features[0];
-const props = feature.properties;
+    map.on('click', 'obrasp-municpios', (e) => {
+        if (!e.features.length) return;
 
-hoveredRegion = props.CLASSNM_RGI_1;
+        const props = e.features[0].properties;
+        const regiaoClicada = props.CLASSNM_RGI_1;
+        const cidadeClicada = props.NM_MUN;
 
-// atualiza opacidade da camada
-map.setPaintProperty(
-'obrasp-municpios',
-'fill-opacity',
-[
-'case',
-['==', ['get','CLASSNM_RGI_1'], hoveredRegion],
-1,
-0.1
-]
-);
+        document.getElementById('filtro-regiao').value = regiaoClicada;
+        popularFiltroCidades(regiaoClicada);
+        document.getElementById('filtro-cidade').value = cidadeClicada;
 
-// popup
-popup
-.setLngLat(e.lngLat)
-.setHTML(`
-<div class="popup-content">
-<b>Região: ${props.CLASSNM_RGI_1}</b><br>
-Cidade: ${props.NM_MUN}<br>
-Habitantes: ${props.CLASSQTD_HAB}<br>
-CDA: ${props.CLASSCDA}<br>
-TCI: ${props.CLASSTCI}<br>
-Colportores: ${props.CLASSQTD_COLP}
-</div>
-`)
-.addTo(map);
+        aplicarFiltrosEAtualizar();
+    });
 
+    map.once('idle', () => {
+        map.setFilter('obrasp-municpios', null);
+
+        const features = map.queryRenderedFeatures({ layers: ['obrasp-municpios'] });
+        
+        const cidadesUnicas = new Map();
+        features.forEach(f => {
+            const props = f.properties;
+            if (props.NM_MUN && !cidadesUnicas.has(props.NM_MUN)) {
+                cidadesUnicas.set(props.NM_MUN, props);
+            }
+        });
+
+        dadosCompletos = Array.from(cidadesUnicas.values());
+
+        const selectRegiao = document.getElementById('filtro-regiao');
+        const regioesUnicas = [...new Set(dadosCompletos.map(d => d.CLASSNM_RGI_1))].sort();
+        
+        regioesUnicas.forEach(regiao => {
+            if(regiao) {
+                const option = document.createElement('option');
+                option.value = regiao;
+                option.textContent = regiao;
+                selectRegiao.appendChild(option);
+            }
+        });
+
+        popularFiltroCidades('todas');
+        aplicarFiltrosEAtualizar();
+    });
+
+    document.getElementById('filtro-regiao').addEventListener('change', (e) => {
+        const regiao = e.target.value;
+        popularFiltroCidades(regiao);
+        aplicarFiltrosEAtualizar();
+    });
+
+    document.getElementById('filtro-cidade').addEventListener('change', () => {
+        aplicarFiltrosEAtualizar();
+    });
+
+    document.getElementById('btn-limpar').addEventListener('click', () => {
+        document.getElementById('filtro-regiao').value = 'todas';
+        popularFiltroCidades('todas');
+        document.getElementById('filtro-cidade').value = 'todas';
+        aplicarFiltrosEAtualizar();
+    });
 });
 
-// sair do polígono
-map.on('mouseleave', 'obrasp-municpios', () => {
-
-map.getCanvas().style.cursor = '';
-
-popup.remove();
-
-hoveredRegion = null;
-
-// restaurar opacidade normal
-map.setPaintProperty(
-'obrasp-municpios',
-'fill-opacity',
-1
-);
-
-});
-
-});
+window.addEventListener('resize', () => map.resize());
 
 </script>
 
