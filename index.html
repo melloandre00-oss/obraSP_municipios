@@ -249,6 +249,30 @@ select:focus {
 }
 .popup-content { font-size: 13px; color: #555; line-height: 1.5; }
 
+    /* ========================================= */
+/* RESPONSIVIDADE (PARA CELULARES)           */
+/* ========================================= */
+@media (max-width: 768px) {
+    #main-container {
+        flex-direction: column; /* Empilha: Painel em cima, Mapa embaixo */
+    }
+
+    #sidebar {
+        width: 100%; /* Ocupa toda a largura do celular */
+        height: 50%; /* Ocupa 50% da altura da tela para deixar espaço pro mapa */
+        box-sizing: border-box; /* Garante que o padding não quebre a largura */
+        padding: 15px 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Joga a sombra para baixo */
+        z-index: 10;
+    }
+
+    #map-wrapper {
+        margin: 0; /* Tira as margens flutuantes para aproveitar todo o espaço */
+        border-radius: 0; /* Deixa o mapa quadrado nas bordas do celular */
+        flex: 1; /* Ocupa o restante (os outros 50%) da tela */
+    }
+}
+    
 </style>
 </head>
 
