@@ -53,11 +53,13 @@ h1, h2, h3, h4 {
     display: flex;
     flex: 1;
     width: 100%;
+    position: relative; 
 }
 
-/* Painel Lateral */
+/* Painel Lateral - ATUALIZADO PARA ANIMAÇÃO DE LARGURA */
 #sidebar {
     width: 340px;
+    flex-shrink: 0; 
     background-color: #ffffff;
     padding: 30px 25px;
     box-shadow: 10px 0 15px rgba(0, 0, 0, 0.03); 
@@ -66,213 +68,149 @@ h1, h2, h3, h4 {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    box-sizing: border-box; /* Crucial para o cálculo de largura */
+    /* Transições suaves ao abrir/fechar (animando width e padding) */
+    transition: width 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease; 
 }
 
-#sidebar h3 {
-    margin: 0;
-    font-size: 18px;
-    color: #333;
+/* Estado Fechado do Painel no Computador - CORREÇÃO DE VAZAMENTO */
+#sidebar.collapsed {
+    width: 0 !important; /* Força largura zero */
+    padding-left: 0 !important; /* Força padding zero */
+    padding-right: 0 !important; /* Força padding zero */
+    overflow: hidden !important; /* Impede que conteúdo transborde */
+    box-shadow: none; /* Esconde a sombra ao fechar */
 }
 
-#sidebar hr {
-    border: 0;
-    border-top: 1px solid #eee;
-    margin: 0;
-}
-
-/* Seção de Filtros e Header do Filtro */
-.filter-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-#sidebar .section-title {
-    font-size: 14px;
-    color: #2c3e50;
-    margin-top: 0;
-    margin-bottom: 10px;
-    border-left: 3px solid #007CB2;
-    padding-left: 8px;
-}
-
-.btn-limpar {
-    background-color: #f0f2f5;
-    border: 1px solid #dcdfe3;
-    color: #555;
-    padding: 5px 10px;
-    font-size: 11px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-    text-transform: uppercase;
-    transition: all 0.2s;
-}
-
-.btn-limpar:hover {
-    background-color: #e4e6e9;
-    color: #333;
-}
-
-.filter-group {
-    margin-bottom: 12px;
-}
-
-.filter-label {
-    font-weight: 600;
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 6px;
-    display: block;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-select {
-    width: 100%;
-    padding: 10px 15px;
+/* ========================================= */
+/* BOTÃO DE ESCONDER/MOSTRAR PAINEL (DESKTOP)*/
+/* ESTILIZADO COM O ÍCONE HAMBÚRGUER        */
+/* ========================================= */
+.btn-toggle {
+    position: absolute;
+    left: 340px; /* Base position igual à largura do sidebar */
+    top: 20px;
+    z-index: 20;
+    background-color: #ffffff;
     border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #fff;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 13px;
-    color: #333;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    border-left: none; /* Cria o efeito de "aba" */
+    border-radius: 0 8px 8px 0;
+    padding: 10px 7px; /* Otimizado para o ícone div */
     cursor: pointer;
-    appearance: none;
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%22%2F%3E%3C%2Fsvg%22%3E');
-    background-repeat: no-repeat;
-    background-position: right 15px top 50%;
-    background-size: 10px auto;
+    box-shadow: 4px 0 8px rgba(0,0,0,0.05);
+    transition: left 0.3s ease, border-radius 0.3s ease, background-color 0.2s; /* Acompanha o painel ao fechar */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-select:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+.btn-toggle:hover {
+    background-color: #f0f2f5;
 }
 
-/* Cards de Resumo */
-.summary-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; 
-    gap: 12px;
+/* Quando o painel fecha, o botão volta para o canto da tela e arredonda */
+#sidebar.collapsed ~ .btn-toggle {
+    left: 0;
+    border-radius: 8px; /* Arredonda todos os cantos ao fechar */
+    border-left: 1px solid #ddd;
 }
 
-.status-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-}
-
-.summary-card {
-    background-color: #f8f9fa;
-    border: 1px solid #eaeaea;
-    border-radius: 8px;
-    padding: 12px;
+/* Estilo das linhas do hambúrguer pura CSS */
+.hamburger {
+    width: 18px;
+    height: 14px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
 }
-
-.status-grid .summary-card {
-    padding: 10px;
-    text-align: center;
-    border-bottom: 5px solid #ccc;
-}
-
-#card-emancipada { border-bottom-color: #0d5a0c; }
-#card-fase1 { border-bottom-color: #e8dc30; }
-#card-fase2 { border-bottom-color: #eae6e6; }
-
-.summary-card.full-width {
-    grid-column: span 2; 
-}
-
-.card-title {
-    font-size: 11px;
-    color: #666;
-    text-transform: uppercase;
-    font-weight: 600;
-    margin-bottom: 5px;
-    letter-spacing: 0.5px;
-}
-
-.status-grid .card-title {
-    font-size: 9px;
-    margin-bottom: 2px;
-}
-
-.card-value {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 18px;
-    color: #007CB2; 
-    font-weight: 700;
-}
-
-.status-grid .card-value {
-    font-size: 14px; /* Reduzido um pouco para caber a porcentagem confortavelmente */
-    color: #333;
-}
-
-/* Área do Mapa */
-#map-wrapper {
-    flex: 1;
-    position: relative;
-    margin: 15px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
-
-#map {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-}
-
-/* Popup */
-.mapboxgl-popup-content {
-    font-family: 'Open Sans', sans-serif;
-    padding: 15px 20px;
-    border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-.popup-content b {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 15px;
-    color: #2c3e50;
-    margin-bottom: 5px;
+.hamburger span {
     display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #555; /* Cor padrão no PC */
+    border-radius: 2px;
+    transition: background-color 0.2s;
 }
+
+/* O resto do seu CSS normal (Filtros, Cards, Popup) */
+#sidebar hr { border: 0; border-top: 1px solid #eee; margin: 0; }
+.filter-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+#sidebar .section-title { font-size: 14px; color: #2c3e50; margin-top: 0; margin-bottom: 10px; border-left: 3px solid #007CB2; padding-left: 8px; }
+.btn-limpar { background-color: #f0f2f5; border: 1px solid #dcdfe3; color: #555; padding: 5px 10px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: 600; text-transform: uppercase; transition: all 0.2s; }
+.btn-limpar:hover { background-color: #e4e6e9; color: #333; }
+.filter-group { margin-bottom: 12px; }
+.filter-label { font-weight: 600; font-size: 12px; color: #666; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+select { width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; background-color: #fff; font-family: 'Open Sans', sans-serif; font-size: 13px; color: #333; transition: border-color 0.2s, box-shadow 0.2s; cursor: pointer; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%22%2F%3E%3C%2Fsvg%22%3E'); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 10px auto; }
+select:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1); }
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.status-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.summary-card { background-color: #f8f9fa; border: 1px solid #eaeaea; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; }
+.status-grid .summary-card { padding: 10px; text-align: center; border-bottom: 5px solid #ccc; }
+#card-emancipada { border-bottom-color: #0d5a0c; } #card-fase1 { border-bottom-color: #e8dc30; } #card-fase2 { border-bottom-color: #eae6e6; }
+.summary-card.full-width { grid-column: span 2; }
+.card-title { font-size: 11px; color: #666; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; letter-spacing: 0.5px; }
+.status-grid .card-title { font-size: 9px; margin-bottom: 2px; }
+.card-value { font-family: 'Montserrat', sans-serif; font-size: 18px; color: #007CB2; font-weight: 700; }
+.status-grid .card-value { font-size: 14px; color: #333; }
+
+/* Área do Mapa - ADICIONADO TRANSIÇÃO DE MARGEM */
+#map-wrapper { flex: 1; position: relative; margin: 15px; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: margin 0.3s ease, border-radius 0.3s ease; }
+#map { position: absolute; top: 0; bottom: 0; left: 0; right: 0; width: 100%; }
+.mapboxgl-popup-content { font-family: 'Open Sans', sans-serif; padding: 15px 20px; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.popup-content b { font-family: 'Montserrat', sans-serif; font-size: 15px; color: #2c3e50; margin-bottom: 5px; display: block; }
 .popup-content { font-size: 13px; color: #555; line-height: 1.5; }
 
-    /* ========================================= */
+/* ========================================= */
 /* RESPONSIVIDADE (PARA CELULARES)           */
 /* ========================================= */
 @media (max-width: 768px) {
-    #main-container {
-        flex-direction: column; /* Empilha: Painel em cima, Mapa embaixo */
-    }
-
-    #sidebar {
-        width: 100%; /* Ocupa toda a largura do celular */
-        height: 50%; /* Ocupa 50% da altura da tela para deixar espaço pro mapa */
-        box-sizing: border-box; /* Garante que o padding não quebre a largura */
-        padding: 15px 20px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Joga a sombra para baixo */
-        z-index: 10;
-    }
-
-    #map-wrapper {
-        margin: 0; /* Tira as margens flutuantes para aproveitar todo o espaço */
-        border-radius: 0; /* Deixa o mapa quadrado nas bordas do celular */
-        flex: 1; /* Ocupa o restante (os outros 50%) da tela */
-    }
-}
+    #main-container { flex-direction: column; }
     
+    #sidebar {
+        width: 100%;
+        height: 50%;
+        padding: 15px 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        z-index: 10;
+        /* Reseta a animação de largura para altura no celular */
+        transition: height 0.3s ease, padding 0.3s ease, border-radius 0.3s ease; 
+    }
+
+    /* Como o painel se esconde no celular (sobe ao invés de ir pro lado) */
+    #sidebar.collapsed {
+        height: 0; /* Força altura zero */
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        border: none;
+        overflow: hidden !important;
+    }
+
+    #map-wrapper { margin: 0; border-radius: 0; flex: 1; }
+
+    /* Transforma o botão lateral numa pílula azul no canto direito */
+    .btn-toggle {
+        left: auto;
+        right: 15px;
+        top: 15px;
+        border-left: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 8px;
+        background-color: #007CB2;
+        color: white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .btn-toggle:hover { background-color: #005f8a; }
+
+    /* Quando fecha no celular, o botão se mantém no mesmo lugar */
+    #sidebar.collapsed ~ .btn-toggle {
+        left: auto;
+        right: 15px;
+    }
+
+    /* Hambúrguer fica branco no celular sobre a pílula azul */
+    .hamburger span { background-color: white; }
+}
 </style>
 </head>
 
@@ -285,7 +223,6 @@ select:focus {
 <div id="main-container">
 
     <div id="sidebar">
-        
         <div>
             <div class="filter-header">
                 <h3 class="section-title">Filtros</h3>
@@ -352,6 +289,14 @@ select:focus {
         </div>
     </div>
 
+    <button id="btn-toggle" class="btn-toggle" title="Esconder/Mostrar Painel">
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </button>
+
     <div id="map-wrapper">
         <div id="map"></div>
     </div>
@@ -372,6 +317,27 @@ const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
 
 let dadosCompletos = [];
 let hoveredCity = null; 
+
+// ==========================================
+// LÓGICA DO BOTÃO DE COLAPSAR (SIMPLIFICADA)
+// ==========================================
+const btnToggle = document.getElementById('btn-toggle');
+const sidebar = document.getElementById('sidebar');
+
+btnToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    
+    // IMPORTANTE: Avisar o mapa que o tamanho da tela dele mudou após a animação (300ms)
+    setTimeout(() => {
+        map.resize();
+    }, 300);
+});
+
+// Reseta o mapa e o texto ao redimensionar a janela
+window.addEventListener('resize', () => {
+    map.resize();
+});
+// ==========================================
 
 function limparNumeroBR(valor) {
     if (!valor) return 0;
@@ -438,14 +404,14 @@ function aplicarFiltrosEAtualizar() {
 
     let somaPopulacao = 0, somaColportores = 0, qtdCDA = 0, qtdTCI = 0;
     let qtdEmancipada = 0, qtdFase1 = 0, qtdFase2 = 0;
-    let totalCidadesFiltradas = 0; // Nova variável para contar o total de cidades do filtro
+    let totalCidadesFiltradas = 0; 
 
     dadosCompletos.forEach(props => {
         const matchRegiao = (regiao === 'todas' || props.CLASSNM_RGI_1 === regiao);
         const matchCidade = (cidade === 'todas' || props.NM_MUN === cidade);
 
         if (matchRegiao && matchCidade) {
-            totalCidadesFiltradas++; // Soma +1 ao total de cidades visíveis
+            totalCidadesFiltradas++; 
 
             somaPopulacao += limparNumeroBR(props.CLASSQTD_HAB);
             somaColportores += limparNumeroBR(props.CLASSQTD_COLP);
@@ -460,7 +426,6 @@ function aplicarFiltrosEAtualizar() {
         }
     });
 
-    // Função auxiliar para calcular a porcentagem de forma segura (evitando divisão por zero)
     const calcPorcentagem = (valor, total) => total > 0 ? Math.round((valor / total) * 100) : 0;
 
     const pctEmancipada = calcPorcentagem(qtdEmancipada, totalCidadesFiltradas);
@@ -473,7 +438,6 @@ function aplicarFiltrosEAtualizar() {
     document.getElementById('val-cda').textContent = formata.format(qtdCDA);
     document.getElementById('val-tci').textContent = formata.format(qtdTCI);
     
-    // Atualização: Exibindo o valor absoluto formatado + a porcentagem
     document.getElementById('val-emancipada').textContent = `${formata.format(qtdEmancipada)} (${pctEmancipada}%)`;
     document.getElementById('val-fase1').textContent = `${formata.format(qtdFase1)} (${pctFase1}%)`;
     document.getElementById('val-fase2').textContent = `${formata.format(qtdFase2)} (${pctFase2}%)`;
@@ -524,6 +488,12 @@ map.on('load', () => {
         document.getElementById('filtro-cidade').value = cidadeClicada;
 
         aplicarFiltrosEAtualizar();
+        
+        // Bônus: Se estiver no celular, recolhe o menu sozinho após clicar em uma cidade no mapa
+        if (window.innerWidth <= 768) {
+            sidebar.classList.add('collapsed');
+            setTimeout(() => map.resize(), 300);
+        }
     });
 
     map.once('idle', () => {
@@ -574,8 +544,6 @@ map.on('load', () => {
         aplicarFiltrosEAtualizar();
     });
 });
-
-window.addEventListener('resize', () => map.resize());
 
 </script>
 
