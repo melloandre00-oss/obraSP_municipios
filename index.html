@@ -273,10 +273,17 @@ select:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 3px rgba(
                     <span class="card-title">População (Habitantes)</span>
                     <span class="card-value" id="val-populacao">Carregando...</span>
                 </div>
-                <div class="summary-card full-width">
+                
+                <div class="summary-card">
                     <span class="card-title">Total de Colportores</span>
                     <span class="card-value" id="val-colportores">...</span>
                 </div>
+
+                <div class="summary-card">
+                    <span class="card-title">Casa de Colportores</span>
+                    <span class="card-value" id="val-cdc">...</span>
+                </div>
+
                 <div class="summary-card">
                     <span class="card-title">Cidades c/ CDA</span>
                     <span class="card-value" id="val-cda">...</span>
@@ -402,7 +409,7 @@ function aplicarFiltrosEAtualizar() {
 
     atualizarOpacidadeMapa();
 
-    let somaPopulacao = 0, somaColportores = 0, qtdCDA = 0, qtdTCI = 0;
+    let somaPopulacao = 0, somaColportores = 0, qtdCDA = 0, qtdTCI = 0, qtdCDC = 0;
     let qtdEmancipada = 0, qtdFase1 = 0, qtdFase2 = 0;
     let totalCidadesFiltradas = 0; 
 
@@ -418,6 +425,8 @@ function aplicarFiltrosEAtualizar() {
 
             if (String(props.CLASSCDA).toLowerCase().trim() === 'sim') qtdCDA++;
             if (String(props.CLASSTCI).toLowerCase().trim() === 'sim') qtdTCI++;
+            // NOVA VERIFICAÇÃO CDC:
+            if (String(props.CLASSCDC).toLowerCase().trim() === 'sim') qtdCDC++;
 
             const status = String(props.CLASSSTATUS).toLowerCase().trim();
             if (status === 'emancipada') qtdEmancipada++;
@@ -437,6 +446,7 @@ function aplicarFiltrosEAtualizar() {
     document.getElementById('val-colportores').textContent = formata.format(Math.round(somaColportores));
     document.getElementById('val-cda').textContent = formata.format(qtdCDA);
     document.getElementById('val-tci').textContent = formata.format(qtdTCI);
+    document.getElementById('val-cdc').textContent = formata.format(qtdCDC); // ATUALIZA O NOVO CARD
     
     document.getElementById('val-emancipada').textContent = `${formata.format(qtdEmancipada)} (${pctEmancipada}%)`;
     document.getElementById('val-fase1').textContent = `${formata.format(qtdFase1)} (${pctFase1}%)`;
@@ -464,6 +474,7 @@ map.on('load', () => {
             Habitantes: ${props.CLASSQTD_HAB}<br>
             CDA: ${props.CLASSCDA}<br>
             TCI: ${props.CLASSTCI}<br>
+            CDC: ${props.CLASSCDC || 'Não'}<br>
             Colportores: ${props.CLASSQTD_COLP}
             </div>
         `).addTo(map);
